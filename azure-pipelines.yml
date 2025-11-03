@@ -7,20 +7,15 @@ stages:
   - job: Build
     displayName: 'Build Job'
     pool:
-      name: 'Azure Pipelines'
+      name: 'newagent'
     steps:
-    - task: NodeTool@0
-      displayName: 'Use Node.js 20.x'
+    - task: Npm@1
       inputs:
-        versionSpec: '20.x'
-        
-    - script: |
-        npm install
-      displayName: 'npm install'
-      
-    - script: |
-        npm run build
-      displayName: 'npm run build'    
+        command: 'install'    
+    - task: Npm@1
+      inputs:
+        command: custom
+        customCommand: 'run build'    
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: 'build'
@@ -34,7 +29,7 @@ stages:
   - job: Deploy
     displayName: 'Deploy Job'
     pool:
-      name: 'Azure Pipelines'
+      name: 'newagent'
     steps:
     - task: DownloadBuildArtifacts@0
       displayName: 'Download Build Artifacts'
