@@ -7,7 +7,7 @@ stages:
   - job: Build
     displayName: 'Build Job'
     pool:
-      name: 'Default'
+      name: 'Azure Pipelines'
     steps:
     - task: NodeTool@0
       displayName: 'Use Node.js 20.x'
@@ -34,7 +34,7 @@ stages:
   - job: Deploy
     displayName: 'Deploy Job'
     pool:
-      name: 'Default'
+      name: 'Azure Pipelines'
     steps:
     - task: DownloadBuildArtifacts@0
       displayName: 'Download Build Artifacts'
@@ -56,3 +56,5 @@ stages:
         packageForLinux: '$(System.ArtifactsDirectory)/naveen_youtube_clone'
         RuntimeStack: 'NODE|20-lts'
         DeploymentTypeLinux: 'oneDeploy'   
+
+    
