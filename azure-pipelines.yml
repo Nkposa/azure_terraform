@@ -11,14 +11,16 @@ stages:
     steps:
     - task: Npm@1
       inputs:
-        command: 'install'    
+        command: 'install'
+        workingDir: 'Youtube_Clone'
     - task: Npm@1
       inputs:
         command: custom
-        customCommand: 'run build'    
+        customCommand: 'run build'
+        workingDir: 'Youtube_Clone'    
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: 'build'
+        PathtoPublish: 'Youtube_Clone/build'
         ArtifactName: 'naveen_youtube_clone'
         publishLocation: 'Container'
 
