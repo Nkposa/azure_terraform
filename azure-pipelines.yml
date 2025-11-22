@@ -57,9 +57,9 @@ stages:
         ConnectionType: 'AzureRM'
         azureSubscription: 'Azure subscription 1(REDACTED_SUBSCRIPTION_ID)'
         appType: 'webAppLinux'
-        WebAppName: 'naveen-test-web-app'
+        WebAppName: 'youtube-naveen'
         deployToSlotOrASE: false
-        ResourceGroupName: 'naveen_test'
+        ResourceGroupName: 'myResourceGroup'
         packageForLinux: '$(System.ArtifactsDirectory)/naveen_youtube_clone'
         RuntimeStack: 'NODE|20-lts'
         StartupCommand: 'pm2 serve /home/site/wwwroot --no-daemon --spa'
