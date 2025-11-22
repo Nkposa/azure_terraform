@@ -1,0 +1,69 @@
+trigger:
+- master
+stages:
+- stage: Build
+  displayName: 'Build Stage'
+  jobs:
+  - job: Build
+    displayName: 'Build Job'
+    pool:
+      name: 'newagent'
+    steps:
+    - task: Npm@1
+      inputs:
+        command: 'install'
+        workingDir: 'Youtube_Clone'
+    - task: Npm@1
+      inputs:
+        command: custom
+        customCommand: 'run build'
+        workingDir: 'Youtube_Clone'    
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: 'Youtube_Clone/build'
+        ArtifactName: 'naveen_youtube_clone'
+        publishLocation: 'Container'
+
+- stage: Deploy
+  displayName: 'Deploy Stage'
+  dependsOn: Build
+  jobs:
+  - job: Deploy
+    displayName: 'Deploy Job'
+    pool:
+      name: 'newagent'
+    steps:
+    - task: DownloadBuildArtifacts@0
+      displayName: 'Download Build Artifacts'
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'naveen_youtube_clone'
+        downloadPath: '$(System.ArtifactsDirectory)'
+        
+    - script: |
+        echo "=== Debugging Build Artifacts ==="
+        ls -la $(System.ArtifactsDirectory)/naveen_youtube_clone/
+        echo ""
+        echo "=== Checking for index.html ==="
+        find $(System.ArtifactsDirectory)/naveen_youtube_clone/ -name "index.html" -exec ls -la {} \;
+        echo ""
+        echo "=== Checking for static files ==="
+        ls -la $(System.ArtifactsDirectory)/naveen_youtube_clone/static/ 2>/dev/null || echo "No static folder found"
+      displayName: 'Debug: Verify build artifacts'
+        
+    - task: AzureRmWebAppDeployment@5
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'Azure subscription 1(REDACTED_SUBSCRIPTION_ID)'
+        appType: 'webAppLinux'
+        WebAppName: 'naveen-test-web-app'
+        deployToSlotOrASE: false
+        ResourceGroupName: 'naveen_test'
+        packageForLinux: '$(System.ArtifactsDirectory)/naveen_youtube_clone'
+        RuntimeStack: 'NODE|20-lts'
+        StartupCommand: 'pm2 serve /home/site/wwwroot --no-daemon --spa'
+        AppSettings: -WEBSITE_NODE_DEFAULT_VERSION 20-lts -SCM_DO_BUILD_DURING_DEPLOYMENT false
+        DeploymentTypeLinux: 'oneDeploy'   
+
+    
